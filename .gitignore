@@ -53,3 +53,7 @@ models/
 
 # Logs
 *.log
+
+# AI Context Files
+GEMINI.md
+CLAUDE.md

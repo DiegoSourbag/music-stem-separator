@@ -89,6 +89,33 @@ If you prefer to set up manually:
    - Ubuntu/Debian: `sudo apt-get install ffmpeg`
    - macOS: `brew install ffmpeg`
 
+### Docker
+
+If you have Docker and Docker Compose installed, you can run the application in a container.
+
+1.  **Build the image:**
+    ```bash
+    docker-compose build
+    ```
+
+2.  **Run the container:**
+    ```bash
+    docker-compose up -d
+    ```
+
+3.  **Access the web interface:**
+    Open your browser and go to `http://127.0.0.1:5001`.
+
+To view the logs:
+```bash
+docker-compose logs -f
+```
+
+To stop the container:
+```bash
+docker-compose down
+```
+
 ## Usage
 
 ### Quick Start: All-in-One Processor
