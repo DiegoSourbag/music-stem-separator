@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Step 1: Provide YouTube URLs
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('process') }}" method="POST">
+            <div class="mb-3">
+                <label for="urls" class="form-label">YouTube URLs (one per line):</label>
+                <textarea class="form-control" id="urls" name="urls" rows="8" placeholder="https://www.youtube.com/watch?v=...
+https://www.youtube.com/watch?v=..."></textarea>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" name="action" value="download" class="btn btn-success">Download MP3</button>
+                <button type="submit" name="action" value="karaoke" class="btn btn-primary">Create Karaoke</button>
+                <button type="submit" name="action" value="4-stem" class="btn btn-secondary">Separate 4 Stems</button>
+                <button type="submit" name="action" value="6-stem" class="btn btn-info">Separate 6 Stems</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

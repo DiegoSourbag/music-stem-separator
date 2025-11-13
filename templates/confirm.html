@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block title %}Confirm Process{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Step 2: Confirm Your Request
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Please review the details below:</h5>
+        
+        <div class="alert alert-secondary">
+            <strong>Action:</strong> 
+            <span class="text-capitalize">{{ action }} Separation</span><br>
+            <strong>Model:</strong> {{ model }}
+        </div>
+
+        <h6>URLs to be processed:</h6>
+        <ul>
+            {% for url in urls %}
+                <li><a href="{{ url }}" target="_blank">{{ url }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <div id="estimate-container" class="alert alert-info mt-4">
+            <p class="mb-0">Calculating time estimate...</p>
+        </div>
+
+        <form action="{{ url_for('run') }}" method="POST">
+            <input type="hidden" name="urls" value="{{ urls|join('\n') }}">
+            <input type="hidden" name="action" value="{{ action }}">
+            <input type="hidden" name="model" value="{{ model }}">
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">&laquo; Cancel</a>
+                <button type="submit" class="btn btn-success">Confirm & Start Processing &raquo;</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const estimateDiv = document.getElementById('estimate-container');
+        const urls = {{ urls|tojson }};
+        const model = {{ model|tojson }};
+
+        fetch("{{ url_for('estimate') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                urls: urls.join('\\n'),
+                model: model
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && !data.error) {
+                const estimateHtml = `
+                    <h6 class="alert-heading">Time Estimate</h6>
+                    <p>
+                        <strong>Audio Duration:</strong> ${data.audio_duration_formatted}<br>
+                        <strong>Estimated Download Time:</strong> ~${data.download_time_formatted}<br>
+                        <strong>Estimated Processing Time (${data.device}):</strong> ~${data.processing_time_formatted}<br>
+                        <hr>
+                        <strong>Total Estimated Time:</strong> ~${data.total_time_formatted}
+                    </p>
+                    <small class="text-muted">Note: First-time model use requires a download (~320 MB), which may add 1-5 minutes.</small>
+                `;
+                estimateDiv.innerHTML = estimateHtml;
+            } else {
+                estimateDiv.innerHTML = '<p class="mb-0">Could not estimate processing time.</p>';
+            }
+        })
+        .catch(err => {
+            console.error('Estimation error:', err);
+            estimateDiv.innerHTML = '<p class="mb-0">Could not estimate processing time.</p>';
+        });
+    });
+</script>
+{% endblock %}

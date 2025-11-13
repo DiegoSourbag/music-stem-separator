@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  music-separator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./downloads:/app/downloads
+      - ./separated:/app/separated
+      - ./karaoke:/app/karaoke
+    restart: unless-stopped

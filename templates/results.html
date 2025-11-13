@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Processing Complete{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Results
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Processing has finished successfully!</h5>
+        <p>The following files have been generated:</p>
+
+        {% if files %}
+            <ul class="list-group">
+                {% for file_path in files %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('download_file', filepath=file_path) }}">{{ file_path.split('/')[-1] }}</a>
+                        <small class="text-muted d-block">{{ file_path }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="mt-3 text-muted">
+                You can also find these files in the <code>karaoke</code> and <code>separated</code> directories inside the project folder.
+            </p>
+        {% else %}
+            <div class="alert alert-warning">
+                No output files were reported. Please check the application console for details.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Process More Files</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

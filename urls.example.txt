@@ -1,0 +1,30 @@
+# Example URL List for Batch Processing
+#
+# Format:
+#   - One YouTube URL per line
+#   - Lines starting with # are comments
+#   - Empty lines are ignored
+#
+# Usage:
+#   python batch_processor.py urls.txt
+#   python batch_processor.py urls.txt --mode full
+#   python batch_processor.py urls.txt --delay 5
+
+# Example URLs (replace with your own)
+# https://www.youtube.com/watch?v=VIDEO_ID_1
+# https://www.youtube.com/watch?v=VIDEO_ID_2
+# https://youtu.be/SHORT_ID
+
+# You can organize URLs with comments
+https://youtu.be/h-qkl0iOqhQ?si=Hy9L83EgDwkx91y_
+https://youtu.be/-FcwtEdR8eg?si=4gVz2qQ8zVNjBb2n
+https://youtu.be/BboNz3FFR7c?si=KLQ2T3mlhH7Q371r
+https://www.youtube.com/watch?v=W2x-F7st3xI
+https://youtu.be/yS0n3aNjlqo?si=97JR2K177QqGJEog
+https://youtu.be/S4kzGhDEURA?si=ir7mheJJhqh0cNQ3
+https://youtu.be/lb3OKnf-8XE?si=rpD5NqPQd-hiBVLM
+https://youtu.be/8LSmaNsVL0s?si=1_KIFnjPj55YO6Rs
+https://youtu.be/MlQXammt2Do?si=2E0lg32NbsSOPzTc
+https://youtu.be/0PubNNK-iC4?si=8GOj-ft7Z3RRkiCU
+https://youtu.be/0Xzr2HtPZbo?si=CKlz76Cv8q1fZCas
+https://youtu.be/E5TRaJH0gho
