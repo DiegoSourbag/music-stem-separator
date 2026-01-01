@@ -12,7 +12,9 @@ A comprehensive Python toolkit for downloading audio from YouTube and separating
 - **CPU Fallback**: Works on CPU-only systems (slower but functional)
 - **Multiple Models**: Choose from different Demucs models based on your needs
 - **Flexible Output**: Save stems as MP3 or WAV with customizable quality
-- **Easy to Use**: Simple command-line interface or use as Python modules
+- **Web Interface**: Browser-based UI for easy access (via Flask)
+- **Docker Support**: Run in containers for easy deployment
+- **Easy to Use**: Multiple interfaces - command-line, Python API, or web browser
 
 ## Supported Stem Types
 
@@ -89,9 +91,11 @@ If you prefer to set up manually:
    - Ubuntu/Debian: `sudo apt-get install ffmpeg`
    - macOS: `brew install ffmpeg`
 
-### Docker
+### Docker (Web UI)
 
-If you have Docker and Docker Compose installed, you can run the application in a container.
+If you have Docker and Docker Compose installed, you can run the web interface in a container.
+
+**Note**: Docker version uses CPU-only. For GPU acceleration, use the local Python installation below.
 
 1.  **Build the image:**
     ```bash
@@ -118,7 +122,12 @@ docker-compose down
 
 ## Usage
 
-### Quick Start: All-in-One Processor
+**Choose Your Interface:**
+- **Command Line (GPU Recommended)**: Fast, full GPU support, detailed below
+- **Web Interface**: Browser-based, easier to use, see [Web Interface](#web-interface) section
+- **Python API**: For integration, see [Python API Usage](#python-api-usage) section
+
+### Quick Start: All-in-One Processor (Command Line)
 
 The easiest way to download and separate music:
 
@@ -467,6 +476,43 @@ For a 4-minute song:
 - Ensure input audio is high quality
 - Some songs separate better than others due to mixing
 
+## Web Interface
+
+The application includes a Flask-based web interface for easy browser access.
+
+### Starting the Web Server
+
+**Option 1: Docker (CPU-only)**
+```bash
+docker-compose up -d
+# Access at http://localhost:5001
+```
+
+**Option 2: Local Python (with GPU support)**
+```bash
+# Activate virtual environment first
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+
+# Start the web server
+python app.py
+
+# Access at http://localhost:5001
+```
+
+### Web UI Features
+
+- **URL Input**: Paste single or multiple YouTube URLs
+- **Processing Modes**:
+  - Karaoke (instrumental + vocals)
+  - 4-Stem Separation
+  - 6-Stem Separation
+  - Download Only
+- **Model Selection**: Choose quality vs speed
+- **High-Performance Mode**: Enable GPU boost (2-3x faster)
+- **Progress Tracking**: Real-time progress updates
+- **File Downloads**: Direct download links for output files
+
 ## Python API Usage
 
 You can also use the scripts as Python modules:
@@ -475,17 +521,22 @@ You can also use the scripts as Python modules:
 from youtube_downloader import YouTubeAudioDownloader
 from stem_separator import StemSeparator
 from music_processor import MusicProcessor
+from karaoke import KaraokeCreator
 
 # Download audio
 downloader = YouTubeAudioDownloader(output_dir='downloads', format='mp3')
 audio_file = downloader.download('https://www.youtube.com/watch?v=VIDEO_ID')
 
-# Separate stems
-separator = StemSeparator(model_name='htdemucs_ft', device='cuda')
+# Separate stems (with GPU)
+separator = StemSeparator(model_name='htdemucs_ft', device='cuda', high_performance=True)
 stems = separator.separate(audio_file)
 
+# Create karaoke version
+karaoke = KaraokeCreator(model='htdemucs_ft', device='cuda', high_performance=True)
+result = karaoke.create_from_youtube('URL')
+
 # Or use the all-in-one processor
-processor = MusicProcessor(model='htdemucs_ft')
+processor = MusicProcessor(model='htdemucs_ft', device='cuda', high_performance=True)
 audio_file, stems = processor.process_from_youtube('URL')
 ```
 
