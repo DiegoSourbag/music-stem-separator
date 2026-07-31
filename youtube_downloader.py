@@ -4,6 +4,7 @@ Downloads audio from YouTube URLs in MP3 or WAV format.
 """
 
 import os
+import shutil
 import sys
 import argparse
 from pathlib import Path
@@ -37,6 +38,18 @@ class YouTubeAudioDownloader:
         self.format = format.lower()
         self.quality = quality
 
+    @staticmethod
+    def _find_deno():
+        """Find Deno even when a long-running Windows process has a stale PATH."""
+        if deno_path := shutil.which('deno'):
+            return deno_path
+        if sys.platform == 'win32':
+            winget_packages = Path(os.environ.get('LOCALAPPDATA', '')) / 'Microsoft' / 'WinGet' / 'Packages'
+            matches = sorted(winget_packages.glob('DenoLand.Deno_*/*deno.exe'))
+            if matches:
+                return str(matches[-1])
+        return None
+
     def download(self, url, filename=None):
         """
         Download audio from YouTube URL.
@@ -62,6 +75,9 @@ class YouTubeAudioDownloader:
             'no_warnings': False,
             'extract_audio': True,
         }
+
+        if deno_path := self._find_deno():
+            ydl_opts['js_runtimes'] = {'deno': {'path': deno_path}}
 
         # Add format-specific options
         if self.format == 'mp3':

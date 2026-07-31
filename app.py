@@ -15,6 +15,8 @@ from smart_processor import SmartProcessor
 
 from youtube_downloader import YouTubeAudioDownloader
 
+from bs_roformer_separator import BSRoformerProcessor
+
 # Set console encoding for Windows
 if sys.platform == 'win32':
     import io
@@ -53,6 +55,8 @@ def run_processing_job(urls, mode, model, high_performance):
         processor = KaraokeCreator(model=model, high_performance=high_performance)
     elif mode == 'download':
         processor = YouTubeAudioDownloader(output_dir='downloads', format='mp3')
+    elif mode == 'bs-6-stem':
+        processor = BSRoformerProcessor()
     else: # '4-stem' or '6-stem'
         processor = MusicProcessor(model=model, high_performance=high_performance)
 
@@ -104,8 +108,14 @@ def process():
     model = 'htdemucs_ft' # Default for karaoke and 4-stem
     if action == '6-stem':
         model = 'htdemucs_6s'
+    elif action == 'bs-6-stem':
+        model = 'bs-roformer-sw-6s'
 
-    return render_template('confirm.html', urls=urls, action=action, model=model)
+    estimate_model = 'htdemucs_6s' if action == 'bs-6-stem' else model
+    return render_template(
+        'confirm.html', urls=urls, action=action, model=model,
+        estimate_model=estimate_model
+    )
 
 
 @app.route('/estimate', methods=['POST'])
@@ -192,4 +202,8 @@ if __name__ == '__main__':
     Path('downloads').mkdir(exist_ok=True)
     Path('separated').mkdir(exist_ok=True)
     Path('karaoke').mkdir(exist_ok=True)
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(
+        debug=os.getenv('FLASK_DEBUG') == '1',
+        host='0.0.0.0',
+        port=5001
+    )

@@ -1,8 +1,9 @@
 # YouTube Downloader Dependencies
-yt-dlp==2025.11.12
+yt-dlp[default]==2026.7.4
 
 # Audio Processing and Stem Separation
 demucs>=4.0.0
+bs-roformer-infer==0.1.5
 torch>=2.0.0
 torchaudio>=2.0.0
 

@@ -11,7 +11,9 @@
         
         <div class="alert alert-secondary">
             <strong>Action:</strong> 
-            <span class="text-capitalize">{{ action }} Separation</span><br>
+            <span class="text-capitalize">
+                {% if action == 'bs-6-stem' %}BS-RoFormer 6-stem separation{% else %}{{ action }} Separation{% endif %}
+            </span><br>
             <strong>Model:</strong> {{ model }}
         </div>
 
@@ -44,7 +46,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const estimateDiv = document.getElementById('estimate-container');
         const urls = {{ urls|tojson }};
-        const model = {{ model|tojson }};
+        const model = {{ estimate_model|default(model)|tojson }};
 
         fetch("{{ url_for('estimate') }}", {
             method: 'POST',
@@ -68,7 +70,7 @@
                         <hr>
                         <strong>Total Estimated Time:</strong> ~${data.total_time_formatted}
                     </p>
-                    <small class="text-muted">Note: First-time model use requires a download (~320 MB), which may add 1-5 minutes.</small>
+                    <small class="text-muted">Note: First-time model use requires a download. BS-RoFormer-SW is approximately 700 MB.</small>
                 `;
                 estimateDiv.innerHTML = estimateHtml;
             } else {
