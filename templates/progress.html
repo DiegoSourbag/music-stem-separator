@@ -41,10 +41,11 @@
                         return; // Stop polling
                     }
 
-                    let percentage = 0;
-                    if (data.total > 0) {
+                    let percentage = Number(data.percentage);
+                    if (!Number.isFinite(percentage) && data.total > 0) {
                         percentage = (data.progress / data.total) * 100;
                     }
+                    percentage = Math.max(0, Math.min(100, percentage || 0));
                     
                     progressBar.style.width = percentage + '%';
                     progressBar.textContent = Math.round(percentage) + '%';
@@ -53,7 +54,7 @@
                     statusText.textContent = data.current_task;
 
                     if (data.is_running) {
-                        setTimeout(updateStatus, 2000); // Poll every 2 seconds
+                        setTimeout(updateStatus, 1000);
                     } else {
                         // Job finished
                         progressBar.classList.remove('progress-bar-animated');

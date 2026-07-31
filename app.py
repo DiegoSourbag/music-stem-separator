@@ -34,6 +34,7 @@ app = Flask(__name__)
 job_status = {
     'is_running': False,
     'progress': 0,
+    'percentage': 0,
     'total': 0,
     'current_task': 'Waiting to start...',
     'error': None,
@@ -46,6 +47,7 @@ def run_processing_job(urls, mode, model, high_performance):
     global job_status
     job_status['is_running'] = True
     job_status['progress'] = 0
+    job_status['percentage'] = 0
     job_status['total'] = len(urls)
     job_status['error'] = None
     job_status['output_files'] = []
@@ -62,6 +64,16 @@ def run_processing_job(urls, mode, model, high_performance):
 
     for i, url in enumerate(urls):
         job_status['current_task'] = f"Processing URL {i+1}/{len(urls)}: {url}"
+        job_status['percentage'] = round(i / len(urls) * 100)
+        if mode == 'bs-6-stem':
+            def update_bs_progress(item_percentage, message, item_index=i):
+                job_status['percentage'] = round(
+                    (item_index + item_percentage / 100) / len(urls) * 100
+                )
+                job_status['current_task'] = (
+                    f"URL {item_index + 1}/{len(urls)}: {message}"
+                )
+            processor.separator.progress_callback = update_bs_progress
         try:
             if mode == 'karaoke':
                 result = processor.create_from_youtube(url=url, keep_original=False)
@@ -81,9 +93,11 @@ def run_processing_job(urls, mode, model, high_performance):
 
         # Update progress after successful completion
         job_status['progress'] = i + 1
+        job_status['percentage'] = round((i + 1) / len(urls) * 100)
 
     job_status['is_running'] = False
     job_status['current_task'] = "All tasks completed!"
+    job_status['percentage'] = 100
 
 
 # --- Routes ---
