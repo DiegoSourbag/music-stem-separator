@@ -12,9 +12,10 @@
         <div class="alert alert-secondary">
             <strong>Action:</strong> 
             <span class="text-capitalize">
-                {% if action == 'bs-6-stem' %}BS-RoFormer 6-stem separation{% else %}{{ action }} Separation{% endif %}
+                {% if action == 'bs-6-stem' %}BS-RoFormer 6-stem separation{% elif action == 'guitar-karaoke' %}Gitaar karaoke (alles behalve gitaar){% else %}{{ action }} Separation{% endif %}
             </span><br>
             <strong>Model:</strong> {{ model }}
+            <br><strong>Uitvoerformaat:</strong> {{ output_format|upper }}
         </div>
 
         <h6>URLs to be processed:</h6>
@@ -24,6 +25,15 @@
             {% endfor %}
         </ul>
 
+        {% if uploaded_files %}
+        <h6>Geüpload audiobestand:</h6>
+        <ul>
+            {% for filename in uploaded_files %}
+                <li>{{ filename.split('_', 1)[-1] }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
         <div id="estimate-container" class="alert alert-info mt-4">
             <p class="mb-0">Calculating time estimate...</p>
         </div>
@@ -32,6 +42,10 @@
             <input type="hidden" name="urls" value="{{ urls|join('\n') }}">
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="model" value="{{ model }}">
+            <input type="hidden" name="output_format" value="{{ output_format }}">
+            {% for filename in uploaded_files %}
+            <input type="hidden" name="uploaded_files" value="{{ filename }}">
+            {% endfor %}
             <div class="d-flex justify-content-between mt-4">
                 <a href="{{ url_for('index') }}" class="btn btn-secondary">&laquo; Cancel</a>
                 <button type="submit" class="btn btn-success">Confirm & Start Processing &raquo;</button>
@@ -48,6 +62,7 @@
         const urls = {{ urls|tojson }};
         const model = {{ estimate_model|default(model)|tojson }};
 
+        {% if urls %}
         fetch("{{ url_for('estimate') }}", {
             method: 'POST',
             headers: {
@@ -81,6 +96,9 @@
             console.error('Estimation error:', err);
             estimateDiv.innerHTML = '<p class="mb-0">Could not estimate processing time.</p>';
         });
+        {% else %}
+        estimateDiv.innerHTML = '<p class="mb-0">De verwerkingstijd hangt af van de lengte van de geüploade MP3 en je GPU.</p>';
+        {% endif %}
     });
 </script>
 {% endblock %}

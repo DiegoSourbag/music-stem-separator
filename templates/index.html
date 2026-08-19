@@ -4,23 +4,87 @@
 {% block content %}
 <div class="card">
     <div class="card-header">
-        Step 1: Provide YouTube URLs
+        Stap 1: Kies een YouTube-link of audiobestand
     </div>
     <div class="card-body">
-        <form action="{{ url_for('process') }}" method="POST">
-            <div class="mb-3">
-                <label for="urls" class="form-label">YouTube URLs (one per line):</label>
-                <textarea class="form-control" id="urls" name="urls" rows="8" placeholder="https://www.youtube.com/watch?v=...
-https://www.youtube.com/watch?v=..."></textarea>
+        <form action="{{ url_for('process') }}" method="POST" enctype="multipart/form-data">
+            <div class="input-option mb-4">
+                <div class="input-option-title">
+                    <span class="input-option-number">1</span>
+                    <div>
+                        <h5 class="mb-1">YouTube-link</h5>
+                        <p class="text-muted mb-0">Plak één of meerdere links, één per regel.</p>
+                    </div>
+                </div>
+                <label for="urls" class="visually-hidden">YouTube-links</label>
+                <textarea class="form-control mt-3" id="urls" name="urls" rows="4" placeholder="https://www.youtube.com/watch?v=..."></textarea>
             </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+            <div class="choice-divider"><span>OF</span></div>
+
+            <div class="input-option input-option-upload mb-4" id="upload-panel">
+                <div class="input-option-title">
+                    <span class="input-option-number">2</span>
+                    <div>
+                        <h5 class="mb-1">Audiobestand vanaf je computer</h5>
+                        <p class="text-muted mb-0">MP3, WAV, FLAC, M4A, AAC, OGG, OPUS of WMA.</p>
+                    </div>
+                </div>
+                <label for="input_format" class="form-label mt-3">Soort audiobestand</label>
+                <select class="form-select" id="input_format" name="input_format">
+                    <option value="auto" selected>Automatisch herkennen (aanbevolen)</option>
+                    <option value="mp3">MP3</option>
+                    <option value="wav">WAV</option>
+                    <option value="flac">FLAC</option>
+                    <option value="m4a">M4A</option>
+                    <option value="aac">AAC</option>
+                    <option value="ogg">OGG</option>
+                    <option value="opus">OPUS</option>
+                    <option value="wma">WMA</option>
+                </select>
+                <label for="audio_file" class="upload-button mt-3">
+                    <span>Kies audiobestand</span>
+                    <small id="selected-file">Nog geen bestand gekozen</small>
+                </label>
+                <input class="visually-hidden" type="file" id="audio_file" name="audio_file" accept="audio/*,.mp3,.wav,.flac,.m4a,.aac,.ogg,.opus,.wma">
+            </div>
+
+            <div class="output-format-box mb-4">
+                <label for="output_format" class="form-label mb-1"><strong>Uitvoerformaat</strong></label>
+                <p class="text-muted small mb-2">Kies het formaat van de bestanden die je terugkrijgt.</p>
+                <select class="form-select" id="output_format" name="output_format">
+                    <option value="mp3" selected>MP3 – kleiner bestand</option>
+                    <option value="wav">WAV – verliesvrije kwaliteit</option>
+                </select>
+            </div>
+
+            <h5 class="mb-3">Stap 2: Wat wil je maken?</h5>
+            <div class="d-grid gap-2 action-buttons">
                 <button type="submit" name="action" value="download" class="btn btn-success">Download MP3</button>
-                <button type="submit" name="action" value="karaoke" class="btn btn-primary">Create Karaoke</button>
-                <button type="submit" name="action" value="4-stem" class="btn btn-secondary">Separate 4 Stems</button>
-                <button type="submit" name="action" value="6-stem" class="btn btn-info">Separate 6 Stems</button>
+                <button type="submit" name="action" value="karaoke" class="btn btn-primary">Zang karaoke</button>
+                <button type="submit" name="action" value="4-stem" class="btn btn-secondary">Splits in 4 stems</button>
+                <button type="submit" name="action" value="6-stem" class="btn btn-info">Splits in 6 stems</button>
                 <button type="submit" name="action" value="bs-6-stem" class="btn btn-warning">BS-RoFormer 6 Stems</button>
+                <button type="submit" name="action" value="guitar-karaoke" class="btn btn-dark guitar-karaoke-button">
+                    Gitaar karaoke
+                    <small>Alles behalve de gitaarlijn</small>
+                </button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const fileInput = document.getElementById('audio_file');
+    const selectedFile = document.getElementById('selected-file');
+    const uploadPanel = document.getElementById('upload-panel');
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        selectedFile.textContent = file ? file.name : 'Nog geen bestand gekozen';
+        uploadPanel.classList.toggle('has-file', Boolean(file));
+    });
+</script>
 {% endblock %}

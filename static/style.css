@@ -14,3 +14,107 @@ body {
 .progress {
     font-size: 1rem;
 }
+
+.input-option {
+    border: 2px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    background: #fff;
+}
+
+.input-option-upload {
+    border-style: dashed;
+    border-color: #0d6efd;
+    background: #f3f8ff;
+}
+
+.input-option-upload.has-file {
+    border-style: solid;
+    border-color: #198754;
+    background: #f2fbf6;
+}
+
+.input-option-title {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.input-option-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    color: #fff;
+    background: #0d6efd;
+    font-weight: 700;
+}
+
+.choice-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: -0.5rem 0 1rem;
+    color: #6c757d;
+    font-weight: 700;
+}
+
+.choice-divider::before,
+.choice-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: #ced4da;
+}
+
+.upload-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    color: #fff;
+    background: #0d6efd;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+}
+
+.upload-button:hover {
+    background: #0b5ed7;
+}
+
+.upload-button small {
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.action-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.output-format-box {
+    padding: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.65rem;
+    background: #fff;
+}
+
+.action-buttons .btn {
+    min-height: 3rem;
+}
+
+.guitar-karaoke-button small {
+    display: block;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+@media (max-width: 576px) {
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+}
