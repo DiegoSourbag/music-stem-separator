@@ -11,6 +11,7 @@ A comprehensive Python toolkit for downloading audio from YouTube and separating
 - **GPU Acceleration**: Automatic NVIDIA GPU detection with CUDA support for faster processing
 - **CPU Fallback**: Works on CPU-only systems (slower but functional)
 - **Multiple Models**: Choose from different Demucs models based on your needs
+- **BS-RoFormer-SW**: Alternative 6-stem engine for improved guitar/bass separation
 - **Flexible Output**: Save stems as MP3 or WAV with customizable quality
 - **Web Interface**: Browser-based UI for easy access (via Flask)
 - **Docker Support**: Run in containers for easy deployment
@@ -293,6 +294,14 @@ https://youtu.be/SHORT_ID
 | `htdemucs_ft` | 4 | Excellent | Medium | **Best overall (default)** |
 | `htdemucs_6s` | 6 | Excellent | Slow | Detailed instrument separation |
 | `mdx_extra` | 4 | Good | Fast | Quick processing |
+
+### BS-RoFormer-SW 6-Stem
+
+The web interface also provides **BS-RoFormer 6 Stems**. This engine exports
+vocals, drums, bass, guitar, piano, and other as separate files. Its model is
+downloaded and checksum-verified on first use (approximately 700 MB). On GPUs
+with 8 GB VRAM or less, processing automatically uses smaller overlapping
+chunks to limit memory use.
 
 ## Performance Optimization
 
