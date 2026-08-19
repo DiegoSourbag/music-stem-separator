@@ -2,6 +2,9 @@
 
 Complete technical architecture documentation for the Music Stem Separator project.
 
+> The Flask GUI (`app.py`) is the primary supported user workflow. The command-line
+> modules below are internal building blocks and developer utilities.
+
 ## Table of Contents
 
 - [System Overview](#system-overview)
@@ -297,7 +300,7 @@ job_status = {
 }
 
 # Background Processing
-def run_processing_job(urls, mode, model, high_performance):
+def run_processing_job(urls, uploaded_files, mode, model, output_format, high_performance):
     # Runs in separate thread
     # Updates job_status as it progresses
     pass
@@ -559,7 +562,7 @@ job_status = {
 }
 
 # Background job
-def run_processing_job(urls, mode, model, high_performance):
+def run_processing_job(urls, uploaded_files, mode, model, output_format, high_performance):
     global job_status
     job_status['is_running'] = True
 
@@ -589,21 +592,19 @@ thread.start()
 
 ---
 
-## Deployment Options
+## Local Deployment
 
-### 1. Local Python Environment (Development/Personal Use)
+### Local Python Environment
 
 **Setup**:
 ```bash
 # Windows
 setup.bat
-venv\Scripts\activate
-python music_processor.py "URL"
+venv\Scripts\python.exe app.py
 
 # Linux/Mac
 ./setup.sh
-source venv/bin/activate
-python music_processor.py "URL"
+venv/bin/python app.py
 ```
 
 **Pros**:
@@ -612,68 +613,7 @@ python music_processor.py "URL"
 - Direct file access
 - Easy debugging
 
-**Cons**:
-- Requires local Python setup
-- Manual dependency management
-- Command-line only (unless running app.py)
-
----
-
-### 2. Docker Container (Cross-platform)
-
-**Setup**:
-```bash
-# Build image
-docker-compose build
-
-# Start container
-docker-compose up -d
-
-# Access web UI
-http://localhost:5001
-```
-
-**Configuration** (`docker-compose.yml`):
-```yaml
-version: '3.8'
-services:
-  music-separator:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./downloads:/app/downloads
-      - ./separated:/app/separated
-      - ./karaoke:/app/karaoke
-    restart: unless-stopped
-```
-
-**Pros**:
-- Isolated environment
-- Consistent across platforms
-- Easy deployment
-- Built-in web UI
-
-**Cons**:
-- CPU-only (no GPU in standard Docker)
-- Slightly slower than native
-- Requires Docker installation
-
-**GPU Support** (requires nvidia-docker):
-```yaml
-# Add to docker-compose.yml
-services:
-  music-separator:
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-```
-
----
-
-### 3. Production Web Server
+### Production Web Server
 
 **Options**:
 - **Gunicorn**: Production WSGI server
@@ -753,9 +693,7 @@ music-stem-separator/
 ├── Configuration
 │   ├── requirements.txt           # Python dependencies
 │   ├── setup.bat                  # Windows setup
-│   ├── setup.sh                   # Linux/Mac setup
-│   ├── Dockerfile                 # Docker image
-│   └── docker-compose.yml         # Docker compose config
+│   └── setup.sh                   # Linux/Mac setup
 │
 ├── Documentation
 │   ├── README.md                  # User guide
@@ -819,12 +757,6 @@ music-stem-separator/
 - URL validation before processing
 - Filename sanitization (removes special characters)
 - Path traversal prevention
-
-### Docker Isolation
-
-- Runs in isolated container
-- Limited file system access via volumes
-- No privileged mode required (unless GPU)
 
 ### Web Interface
 
@@ -936,9 +868,9 @@ python stem_separator.py --list-models
 This architecture provides a solid foundation for audio stem separation with:
 
 - **Modularity**: Each component can be used independently
-- **Flexibility**: Multiple interfaces (CLI, API, Web)
+- **Flexibility**: GUI-first workflows backed by modular Python components
 - **Scalability**: From single songs to batch processing
 - **Performance**: GPU acceleration with intelligent fallbacks
 - **Usability**: Simple setup and intuitive interfaces
 
-The system balances power user needs (command-line, Python API) with accessibility (web UI, Docker) while maintaining high code quality and maintainability.
+The system uses the Flask web UI as its primary user workflow while retaining modular internal components.

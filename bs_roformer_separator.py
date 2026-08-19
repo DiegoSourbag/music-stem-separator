@@ -122,7 +122,8 @@ class BSRoformerSeparator:
             estimated = estimated[..., border:-border]
         return dict(zip(instruments, estimated))
 
-    def separate(self, audio_file, output_format='mp3', bitrate=320):
+    def separate(self, audio_file, output_format='mp3', bitrate=320,
+                 exclude_stem=None):
         audio_path = Path(audio_file)
         if not audio_path.exists():
             raise FileNotFoundError(f"Audio file not found: {audio_file}")
@@ -152,6 +153,32 @@ class BSRoformerSeparator:
             self._report_progress(86, 'Encoding output stems...')
 
             output_files = {}
+            if exclude_stem is not None:
+                if exclude_stem not in stems:
+                    raise ValueError(
+                        f"Stem '{exclude_stem}' is not available; found: {', '.join(stems)}"
+                    )
+                combined_audio = sum(
+                    audio for name, audio in stems.items() if name != exclude_stem
+                )
+                # Summing estimated stems can introduce small peaks above full scale.
+                peak = float(np.max(np.abs(combined_audio)))
+                if peak > 1.0:
+                    combined_audio = combined_audio / peak
+                output_name = f'{exclude_stem}_karaoke'
+                wav_path = song_output_dir / f'{output_name}.wav'
+                sf.write(wav_path, combined_audio.T, samplerate, subtype='FLOAT')
+                output_path = wav_path
+                if output_format == 'mp3':
+                    output_path = song_output_dir / f'{output_name}.mp3'
+                    ffmpeg.output(
+                        ffmpeg.input(str(wav_path)).audio,
+                        str(output_path), audio_bitrate=f'{bitrate}k'
+                    ).overwrite_output().run(quiet=True)
+                    wav_path.unlink()
+                self._report_progress(100, f'Created {output_name}')
+                return {output_name: output_path.as_posix()}
+
             total_stems = len(stems)
             for index, (stem_name, stem_audio) in enumerate(stems.items(), 1):
                 print(f"  [{index}/{total_stems}] Saving {stem_name}...", end=' ', flush=True)
@@ -213,4 +240,25 @@ class BSRoformerProcessor:
     def process_local_file(self, audio_file, output_format='mp3', mp3_bitrate=320):
         return self.separator.separate(
             audio_file, output_format=output_format, bitrate=mp3_bitrate
+        )
+
+    def create_guitar_karaoke_from_youtube(self, url, filename=None,
+                                           output_format='mp3', mp3_bitrate=320,
+                                           keep_original=False):
+        self.separator._report_progress(1, 'Downloading audio...')
+        downloaded_file = self.downloader.download(url, filename)
+        try:
+            return self.create_guitar_karaoke_from_file(
+                downloaded_file, output_format=output_format,
+                mp3_bitrate=mp3_bitrate
+            )
+        finally:
+            if not keep_original and Path(downloaded_file).exists():
+                os.remove(downloaded_file)
+
+    def create_guitar_karaoke_from_file(self, audio_file, output_format='mp3',
+                                        mp3_bitrate=320):
+        return self.separator.separate(
+            audio_file, output_format=output_format, bitrate=mp3_bitrate,
+            exclude_stem='guitar'
         )

@@ -36,10 +36,15 @@ env/
 downloads/
 separated/
 karaoke/
+uploads/
 *.mp3
 *.wav
 *.m4a
 *.flac
+*.aac
+*.ogg
+*.opus
+*.wma
 urls.txt
 batch_errors.log
 
