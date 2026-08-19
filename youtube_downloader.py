@@ -74,6 +74,16 @@ class YouTubeAudioDownloader:
             'quiet': False,
             'no_warnings': False,
             'extract_audio': True,
+            'noplaylist': True,
+            'retries': 5,
+            'fragment_retries': 5,
+            'extractor_retries': 3,
+            # The default Android VR client currently receives stream URLs
+            # that YouTube rejects with 403 for some videos. The embedded web
+            # client produces a working, separately signed URL.
+            'extractor_args': {
+                'youtube': {'player_client': ['web_embedded']}
+            },
         }
 
         if deno_path := self._find_deno():
